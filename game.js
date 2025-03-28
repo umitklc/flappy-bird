@@ -10,9 +10,20 @@ let jumpForce = -10;
 let isGameOver = false;
 let playerName = localStorage.getItem('playerName');
 let character = localStorage.getItem('character');
+let lastTime = 0;
+const fps = 60;
+const interval = 1000/fps;
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+if (isMobile) {
+    // Mobil cihazlar için özel ayarlar
+    jumpForce = -12; // Daha güçlü zıplama
+    gravity = 0.4; // Daha düşük yerçekimi
+    gameSpeed = 1.8; // Daha yavaş başlangıç hızı
+}
 // Oyun başlangıcı
 function initGame() {
+
     // Oyuncu karakterini ayarla
     bird = document.getElementById('bird');
     
@@ -44,12 +55,26 @@ function initGame() {
     // Olay dinleyicileri
     document.addEventListener('keydown', handleJump);
     document.getElementById('game-container').addEventListener('click', handleJump);
+    document.addEventListener('touchstart', handleTouch, { passive: false });
+    document.addEventListener('touchend', preventTouch, { passive: false });
     
     // Oyun döngüsünü başlat
     requestAnimationFrame(gameLoop);
     
     // Boru oluşturma döngüsü
     setInterval(createPipe, 2000);
+}
+function handleTouch(e) {
+    e.preventDefault();
+    if (isGameOver) {
+        return;
+    } else {
+        bird.velocity = jumpForce;
+    }
+}
+
+function preventTouch(e) {
+    e.preventDefault();
 }
 
 // Zıplama fonksiyonu
@@ -94,7 +119,17 @@ function createPipe() {
         passed: false
     });
 }
-
+function gameLoop(timestamp) {
+    if (timestamp - lastTime > interval) {
+        if (!isGameOver) {
+            updateBird();
+            updatePipes();
+            checkCollisions();
+        }
+        lastTime = timestamp;
+    }
+    requestAnimationFrame(gameLoop);
+}
 // Oyun döngüsü
 function gameLoop() {
     if (!isGameOver) {

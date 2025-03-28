@@ -1,7 +1,18 @@
 // Karakter seçimi ve oyun başlatma
 let selectedCharacter = null;
 let playerName = "";
+let lastTime = 0;
+const fps = 60;
+const interval = 1000/fps;
 
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+if (isMobile) {
+    // Mobil cihazlar için özel ayarlar
+    jumpForce = -12; // Daha güçlü zıplama
+    gravity = 0.4; // Daha düşük yerçekimi
+    gameSpeed = 1.8; // Daha yavaş başlangıç hızı
+}
 function selectCharacter(character) {
     selectedCharacter = character;
     playerName = character;
@@ -31,7 +42,17 @@ function startGame() {
     localStorage.setItem('character', selectedCharacter);
     window.location.href = 'game.html';
 }
-
+function gameLoop(timestamp) {
+    if (timestamp - lastTime > interval) {
+        if (!isGameOver) {
+            updateBird();
+            updatePipes();
+            checkCollisions();
+        }
+        lastTime = timestamp;
+    }
+    requestAnimationFrame(gameLoop);
+}
 // Skorları yükle ve göster
 function loadScores() {
     try {
