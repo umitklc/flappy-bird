@@ -5,7 +5,7 @@ let level = 1;
 let gameSpeed = 2;
 let gapHeight = 200;
 let gravity = 0.5;
-let jumpForce = -10;
+let jumpForce = -7;
 let isGameOver = false;
 let playerName = localStorage.getItem('playerName');
 let character = localStorage.getItem('character');
@@ -37,8 +37,9 @@ function initGame() {
     }
     
     if (isMobile) {
-        jumpForce = -12;
-        gravity = 0.4;
+        gapHeight = 140;
+        jumpForce = -5;
+        gravity = 0.2;
     }
     
     bird.style.left = '100px';
