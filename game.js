@@ -17,7 +17,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 
 if (isMobile) {
     // Mobil cihazlar için özel ayarlar
-    jumpForce = -12; // Daha güçlü zıplama
+    jumpForce = -5; // Daha güçlü zıplama
     gravity = 0.4; // Daha düşük yerçekimi
     gameSpeed = 1.8; // Daha yavaş başlangıç hızı
 }
