@@ -39,7 +39,7 @@ function initGame() {
     if (isMobile) {
         gapHeight = 140;
         jumpForce = -5;
-        gravity = 0.2;
+        gravity = 0.3;
     }
     
     bird.style.left = '100px';
