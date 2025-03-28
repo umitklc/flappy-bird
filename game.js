@@ -3,7 +3,7 @@ let pipes = [];
 let score = 0;
 let level = 1;
 let gameSpeed = 2;
-let gapHeight = 200;
+let gapHeight = 250;
 let gravity = 0.5;
 let jumpForce = -7;
 let isGameOver = false;
@@ -21,13 +21,16 @@ function initGame() {
         bird.style.width = '40px';
         bird.style.height = '40px';
         bird.style.backgroundColor = '#e74c3c';
-        bird.style.borderRadius = '50%';
+        bird.style.borderRadius = '50%'
+     
     } else {
         bird.style.width = '50px';
         bird.style.height = '50px';
         bird.style.backgroundImage = `url(assets/${character}.png)`;
-        bird.style.backgroundSize = 'contain';
+        
         bird.style.backgroundRepeat = 'no-repeat';
+        bird.style.borderRadius = '50%'
+         
     }
     
     if (character === 'Yunus') {
