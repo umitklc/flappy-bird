@@ -3,7 +3,7 @@ let pipes = [];
 let score = 0;
 let level = 1;
 let gameSpeed = 2;
-let gapHeight = 350;
+let gapHeight = 300;
 let gravity = 0.5;
 let jumpForce = -7;
 let isGameOver = false;
@@ -91,7 +91,7 @@ function createPipe() {
     topPipe.className = 'pipe';
     topPipe.style.height = `${topHeight}px`;
     topPipe.style.top = '0';
-    topPipe.style.left = '400px';
+    topPipe.style.left = '600px';
     gameContainer.appendChild(topPipe);
     
     const bottomPipe = document.createElement('div');
