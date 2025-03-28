@@ -1,4 +1,3 @@
-// Oyun değişkenleri
 let bird;
 let pipes = [];
 let score = 0;
@@ -15,16 +14,7 @@ const fps = 60;
 const interval = 1000/fps;
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-if (isMobile) {
-    // Mobil cihazlar için özel ayarlar
-    jumpForce = -5; // Daha güçlü zıplama
-    gravity = 0.4; // Daha düşük yerçekimi
-    gameSpeed = 1.8; // Daha yavaş başlangıç hızı
-}
-// Oyun başlangıcı
 function initGame() {
-
-    // Oyuncu karakterini ayarla
     bird = document.getElementById('bird');
     
     if (character === 'other') {
@@ -40,65 +30,59 @@ function initGame() {
         bird.style.backgroundRepeat = 'no-repeat';
     }
     
-    // Yunus için kolay mod ayarları
     if (character === 'Yunus') {
         gapHeight = 250;
         gameSpeed = 1.5;
         jumpForce = -12;
     }
     
-    // Başlangıç pozisyonu
+    if (isMobile) {
+        jumpForce = -12;
+        gravity = 0.4;
+    }
+    
     bird.style.left = '100px';
     bird.style.top = '300px';
     bird.velocity = 0;
     
-    // Olay dinleyicileri
     document.addEventListener('keydown', handleJump);
+    document.getElementById('game-container').addEventListener('touchstart', handleTouch, { passive: false });
     document.getElementById('game-container').addEventListener('click', handleJump);
-    document.addEventListener('touchstart', handleTouch, { passive: false });
-    document.addEventListener('touchend', preventTouch, { passive: false });
     
-    // Oyun döngüsünü başlat
     requestAnimationFrame(gameLoop);
-    
-    // Boru oluşturma döngüsü
     setInterval(createPipe, 2000);
 }
+
 function handleTouch(e) {
     e.preventDefault();
     if (isGameOver) {
-        return;
+        const elements = document.elementsFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+        for (let element of elements) {
+            if (element.tagName === 'BUTTON') {
+                element.click();
+                break;
+            }
+        }
     } else {
         bird.velocity = jumpForce;
     }
 }
 
-function preventTouch(e) {
-    e.preventDefault();
-}
-
-// Zıplama fonksiyonu
 function handleJump(e) {
     if ((e.type === 'keydown' && e.code === 'Space') || e.type === 'click') {
-        if (isGameOver) {
-            return;
-        } else {
+        if (!isGameOver) {
             bird.velocity = jumpForce;
         }
     }
 }
 
-// Boru oluşturma
 function createPipe() {
     if (isGameOver) return;
     
     const gameContainer = document.getElementById('game-container');
     const containerHeight = gameContainer.offsetHeight;
-    
-    // Üst boru için rastgele yükseklik
     const topHeight = Math.floor(Math.random() * (containerHeight - gapHeight - 100)) + 50;
     
-    // Boruları oluştur
     const topPipe = document.createElement('div');
     topPipe.className = 'pipe';
     topPipe.style.height = `${topHeight}px`;
@@ -119,6 +103,7 @@ function createPipe() {
         passed: false
     });
 }
+
 function gameLoop(timestamp) {
     if (timestamp - lastTime > interval) {
         if (!isGameOver) {
@@ -130,52 +115,36 @@ function gameLoop(timestamp) {
     }
     requestAnimationFrame(gameLoop);
 }
-// Oyun döngüsü
-function gameLoop() {
-    if (!isGameOver) {
-        updateBird();
-        updatePipes();
-        checkCollisions();
-    }
-    requestAnimationFrame(gameLoop);
-}
 
-// Kuşu güncelle
 function updateBird() {
     bird.velocity += gravity;
     const currentTop = parseInt(bird.style.top);
     bird.style.top = `${currentTop + bird.velocity}px`;
     
-    // Zemine veya tavana çarptı mı?
     if (currentTop <= 0 || currentTop >= document.getElementById('game-container').offsetHeight - 50) {
         gameOver();
     }
 }
 
-// Boruları güncelle
 function updatePipes() {
     for (let i = pipes.length - 1; i >= 0; i--) {
         const pipe = pipes[i];
         const currentLeft = parseInt(pipe.top.style.left);
         
-        // Boruyu hareket ettir
         pipe.top.style.left = `${currentLeft - gameSpeed}px`;
         pipe.bottom.style.left = `${currentLeft - gameSpeed}px`;
         
-        // Boru ekranın dışına çıktı mı?
         if (currentLeft < -60) {
             pipe.top.remove();
             pipe.bottom.remove();
             pipes.splice(i, 1);
         }
         
-        // Boruyu geçti mi?
         if (!pipe.passed && currentLeft < 100) {
             pipe.passed = true;
             score++;
             document.getElementById('score-display').textContent = `Skor: ${score}`;
             
-            // Seviye atlama kontrolü
             if (score % 10 === 0) {
                 levelUp();
             }
@@ -183,7 +152,6 @@ function updatePipes() {
     }
 }
 
-// Seviye atlama
 function levelUp() {
     level++;
     gameSpeed += 0.5;
@@ -191,7 +159,6 @@ function levelUp() {
     document.getElementById('level-display').textContent = `Seviye: ${level}`;
 }
 
-// Çarpışma kontrolü
 function checkCollisions() {
     const birdRect = bird.getBoundingClientRect();
     
@@ -210,15 +177,15 @@ function checkCollisions() {
     }
 }
 
-// Oyun bitişi
 function gameOver() {
     if (isGameOver) return;
     isGameOver = true;
     
-    // Skoru kaydet
     saveScore(playerName, score);
-    
-    // Oyun bitiş ekranı
+    showGameOverScreen();
+}
+
+function showGameOverScreen() {
     const gameOverDiv = document.createElement('div');
     gameOverDiv.className = 'game-over';
     gameOverDiv.innerHTML = `
@@ -226,14 +193,28 @@ function gameOver() {
         <p>Skor: ${score}</p>
         <p>Seviye: ${level}</p>
         <div class="game-over-buttons">
-            <button onclick="window.location.reload()">Tekrar Oyna</button>
-            <button onclick="window.location.href='index.html'">Ana Sayfa</button>
+            <button id="restart-btn">Tekrar Oyna</button>
+            <button id="home-btn">Ana Sayfa</button>
         </div>
     `;
     document.getElementById('game-container').appendChild(gameOverDiv);
+    
+    document.getElementById('restart-btn').addEventListener('click', () => window.location.reload());
+    document.getElementById('home-btn').addEventListener('click', () => window.location.href = 'index.html');
+    
+    if (isMobile) {
+        document.getElementById('restart-btn').addEventListener('touchend', (e) => {
+            e.preventDefault();
+            window.location.reload();
+        }, { passive: false });
+        
+        document.getElementById('home-btn').addEventListener('touchend', (e) => {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        }, { passive: false });
+    }
 }
 
-// Skoru kaydet
 function saveScore(name, score) {
     try {
         const scores = JSON.parse(localStorage.getItem('flappyScores') || '[]');
@@ -245,5 +226,4 @@ function saveScore(name, score) {
     }
 }
 
-// Oyunu başlat
 window.onload = initGame;
