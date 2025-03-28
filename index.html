@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird - Giriş</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-menu">
+        <h1>Flappy Bird</h1>
+        <div class="character-selection">
+            <div class="character-option" onclick="selectCharacter('Kerem')">
+                <img src="assets/Kerem.png" alt="Kerem">
+                <span>Kerem</span>
+            </div>
+            <div class="character-option" onclick="selectCharacter('Elif')">
+                <img src="assets/Elif.png" alt="Elif">
+                <span>Elif</span>
+            </div>
+            <div class="character-option" onclick="selectCharacter('Yunus')">
+                <img src="assets/Yunus.png" alt="Yunus">
+                <span>Yunus</span>
+            </div>
+            <div class="character-option" onclick="selectOther()">
+                <div class="other-shape"></div>
+                <span>Diğer</span>
+            </div>
+        </div>
+        <div id="other-input" class="hidden">
+            <input type="text" id="player-name" placeholder="İsminizi girin">
+            <button onclick="startGame()">Oyuna Başla</button>
+        </div>
+        <div class="high-scores">
+            <h2>En Yüksek Skorlar</h2>
+            <div id="score-list"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
